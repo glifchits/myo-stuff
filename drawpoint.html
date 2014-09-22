@@ -17,7 +17,7 @@
   </head>
   <body>
 
-    <canvas id="canvas" width=1350 height=650></canvas>
+    <canvas id="canvas" width=700 height=550></canvas>
     
   <script>
     $(function initMyo() {
@@ -41,18 +41,24 @@
 
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
-    ctx.lineWidth = "5";
-    ctx.strokeStyle = "green";
 
     var oldPoint = new Point(canvas.width / 2, canvas.height / 2);
 
     var pointDelta = function(dx, dy) {
       var p1 = oldPoint;
-      return new Point(p1.x + dx, p1.y + dy);
+      var x = p1.x + dx;
+      var y = p1.y + dy;
+      if (x > canvas.width) x = canvas.width;
+      else if (x < 0) x = 0;
+      if (y > canvas.height) y = canvas.height ;
+      else if (y < 0) y = 0;
+      return new Point(x, y);
     };
 
     var oldpitch = null;
     var oldtheta = null;
+
+    var lastPose = 0;
 
     var handleData = function(data) {
       // euler pitch for up and down
@@ -66,25 +72,45 @@
         return;
       }
 
+      if (data.pose) {
+        console.log("got pose", data.pose);
+        lastPose = data.pose.type;
+      }
+
       var dpitch = data.euler.pitch - oldpitch;
-      dpitch = dpitch * 1000;
+      dpitch = dpitch * 2000;
 
       var dtheta = data.rotation[3] - oldtheta;
-      dtheta = dtheta * 200;
-      console.log("dtheta", dtheta);
+      dtheta = dtheta * 3000;
 
       var newPoint = pointDelta(dtheta, -dpitch);
-      drawPath(oldPoint, newPoint);
+
+      if (lastPose === 1) { // if fist
+        drawPath(oldPoint, newPoint, "green");
+      } else if (lastPose === 3) { // wave out
+        clearCanvas();
+      } else {
+        drawPath(oldPoint, newPoint, "#EEEEEE", 1);
+      }
 
       oldPoint = newPoint;
       oldpitch = data.euler.pitch;
+      oldtheta = data.rotation[3];
     };
 
-    var drawPath = function(p1, p2) {
+    var drawPath = function(p1, p2, colour, thickness) {
+      ctx.strokeStyle = colour || "white";
+      ctx.lineWidth = thickness || "5";
       ctx.beginPath();
       ctx.moveTo(p1.x, p1.y);
       ctx.lineTo(p2.x, p2.y);
       ctx.stroke();
+    };
+
+    var clearCanvas = function() {
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+ //     newPoint = oldPoint = new Point(canvas.width / 2, canvas.height / 2);
     };
 
   </script>

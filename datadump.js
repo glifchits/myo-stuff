@@ -44,13 +44,13 @@ var handleData = function(data) {
 		} else if (type === 4) {
 			text = "spread out";
 		} else if (type === 5) {
-			text = "thumb to pinky (5)";
+			text = "thumb to pinky";
 		} else if (type === 6) {
-			text = "thumb to pinky (6)";
+			text = "thumb to pinky";
 		} else {
 			text = "unknown, got type = "+type;
 		}
-		$("#pose").text(text);
+		$("#pose").text(type + ": " + text);
 	}
 };
 
