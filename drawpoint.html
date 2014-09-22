@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Myo</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="myojs/myojs-0.8.6.js"></script>
+
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      #canvas {
+        border: 1px dotted;
+      }
+    </style>
+  </head>
+  <body>
+
+    <canvas id="canvas" width=1350 height=650></canvas>
+    
+  <script>
+    $(function initMyo() {
+      var hub = new Myo.Hub();
+      hub.on("frame", function(frame) {
+        var data = frame.data;
+        if (data.rssi) {
+          handleRssi(data);
+        } else {
+          handleData(data);
+        }
+      });
+    });
+
+    var handleRssi = function() {}; // not implemented
+
+    var Point = function(x, y) {
+      this.x = x;
+      this.y = y;
+    };
+
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    ctx.lineWidth = "5";
+    ctx.strokeStyle = "green";
+
+    var oldPoint = new Point(canvas.width / 2, canvas.height / 2);
+
+    var pointDelta = function(dx, dy) {
+      var p1 = oldPoint;
+      return new Point(p1.x + dx, p1.y + dy);
+    };
+
+    var oldpitch = null;
+    var oldtheta = null;
+
+    var handleData = function(data) {
+      // euler pitch for up and down
+
+      if (oldpitch === null) {
+        oldpitch = data.euler.pitch;
+        return;
+      }
+      if (oldtheta === null) {
+        oldtheta = data.rotation[3];
+        return;
+      }
+
+      var dpitch = data.euler.pitch - oldpitch;
+      dpitch = dpitch * 1000;
+
+      var dtheta = data.rotation[3] - oldtheta;
+      dtheta = dtheta * 200;
+      console.log("dtheta", dtheta);
+
+      var newPoint = pointDelta(dtheta, -dpitch);
+      drawPath(oldPoint, newPoint);
+
+      oldPoint = newPoint;
+      oldpitch = data.euler.pitch;
+    };
+
+    var drawPath = function(p1, p2) {
+      ctx.beginPath();
+      ctx.moveTo(p1.x, p1.y);
+      ctx.lineTo(p2.x, p2.y);
+      ctx.stroke();
+    };
+
+  </script>
+
+  </body>
+</html>

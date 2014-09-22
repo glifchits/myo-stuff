@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Myo</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="myojs/myojs-0.8.6.js"></script>
+    <script src="datadump.js"></script>
+  </head>
+  <body>
+    <h3>Myo data</h3>
+
+    <div>
+      Time: <span id="timestamp"></span>
+      Signal strength: <span id="rssi">n/a</span>
+    </div>
+
+    <div>
+      Pose: <span id="pose">(none yet)</span>
+    </div>
+
+    <div id="myodata">
+      <div id="rotation">
+        <h5>Rotation</h5>
+        <pre></pre>
+        <div class="graph"></div>
+      </div>
+      <div id="euler">
+        <h5>Euler</h5>
+        <pre></pre>
+        <div class="graph"></div>
+      </div>
+      <div id="accel">
+        <h5>Accel</h5>
+        <pre></pre>
+        <div class="graph"></div>
+      </div>
+      <div id="gyro">
+        <h5>Gyro</h5>
+        <pre></pre>
+        <div class="graph"></div>
+      </div>
+    </div>
+  </body>
+</html>
